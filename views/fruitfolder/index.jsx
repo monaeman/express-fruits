@@ -7,7 +7,7 @@ function index({ fruits }) {
         return (
           <li key={i}>
             {" "}
-            <a href={`/fruits/${i}`}> {fruit.name} </a>
+            <a href={`/fruitfolder/${i}`}> {fruit.name} </a>
             is {fruit.color} <br />
             {fruit.readyToEat
               ? "it is ready to eat "
