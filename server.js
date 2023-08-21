@@ -47,11 +47,36 @@ app.get("/fruitfolder/:index", (req, res) => {
     fruit: fruits[req.params.index], //there will be a variable available inside the ejs file called fruit, its value is fruits[req.params.indexOfFruitsArray]
   });
 });
+//Middelware
+app.use((req, res, next) => {
+  console.log("I run for all routes!");
+  next();
+});
+//This allows the body of the post request
+app.use(express.urlencoded({ extended: false }));
 
 app.get("/veggies", (req, res) => {
   res.render("veggies/index", {
     vegtables: vegtables,
   });
+});
+
+//put this above your Show route
+app.get("/veggies/new", (req, res) => {
+  res.render("veggies/New");
+});
+
+//Create = POST
+app.post("/veggies", (req, res) => {
+  console.log(req.body);
+  if (req.body.readyToEat === "on") {
+    req.body.readyToEat = true;
+  } else {
+    req.body.readyToEat = false;
+  }
+  vegtables.push(req.body);
+  console.log("this is the vegtable array", vegtables);
+  res.send("data recieved");
 });
 
 //show

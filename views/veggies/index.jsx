@@ -3,6 +3,9 @@ import React from "react";
 function index({ vegtables }) {
   return (
     <div>
+      <nav>
+        <a href="/veggies/new">Create New vegtable</a>
+      </nav>
       {vegtables.map((vegtable, i) => {
         return (
           <li key={i}>
