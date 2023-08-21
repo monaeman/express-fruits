@@ -3,6 +3,9 @@ import React from "react";
 function index({ fruits }) {
   return (
     <div>
+      <nav>
+        <a href="/fruitfolder/new">Create New Fruit</a>
+      </nav>
       {fruits.map((fruit, i) => {
         return (
           <li key={i}>
