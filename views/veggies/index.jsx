@@ -10,7 +10,7 @@ function index({ vegtables }) {
         return (
           <li key={i}>
             {" "}
-            <a href={`/veggies/${i}`}> {vegtable.name} </a>
+            <a href={`/veggies/${vegtable.id}`}> {vegtable.name} </a>
             is {vegtable.color} <br />
             {vegtable.readyToEat
               ? "it is ready to eat "

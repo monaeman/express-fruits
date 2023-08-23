@@ -7,6 +7,7 @@ const fruits = require("./models/fruits.js");
 const vegtables = require("./models/vegtables.js");
 const mongoose = require("mongoose");
 const Fruit = require("./models/fruit.js");
+const Vegtable = require("./models/vegtable.js");
 
 //connect with mongo
 mongoose.connect(process.env.MONGO_URI, {
@@ -67,10 +68,12 @@ app.post("/fruitfolder", async (req, res) => {
 });
 
 //show
-app.get("/fruitfolder/:index", (req, res) => {
+app.get("/fruitfolder/:id", async (req, res) => {
+  const oneFruit = await Fruit.findById(req.params.id);
   res.render("fruitfolder/Show", {
+    fruit: oneFruit,
     //second param must be an object
-    fruit: fruits[req.params.index], //there will be a variable available inside the ejs file called fruit, its value is fruits[req.params.indexOfFruitsArray]
+    //fruit: fruits[req.params.index], //there will be a variable available inside the ejs file called fruit, its value is fruits[req.params.indexOfFruitsArray]
   });
 });
 //Middelware
@@ -81,9 +84,10 @@ app.use((req, res, next) => {
 //This allows the body of the post request
 app.use(express.urlencoded({ extended: false }));
 
-app.get("/veggies", (req, res) => {
+app.get("/veggies", async function (req, res) {
+  const foundVegtables = await Vegtable.find({});
   res.render("veggies/index", {
-    vegtables: vegtables,
+    vegtables: foundVegtables,
   });
 });
 
@@ -93,23 +97,28 @@ app.get("/veggies/new", (req, res) => {
 });
 
 //Create = POST
-app.post("/veggies", (req, res) => {
+app.post("/veggies", async (req, res) => {
   console.log(req.body);
   if (req.body.readyToEat === "on") {
     req.body.readyToEat = true;
   } else {
     req.body.readyToEat = false;
   }
-  vegtables.push(req.body);
-  console.log("this is the vegtable array", vegtables);
-  res.send("data recieved");
+  const createdVegtable = await Vegtable.create(req.body);
+  console.log(createdVegtable);
+  res.redirect("/veggies");
+  // vegtables.push(req.body);
+  // console.log("this is the vegtable array", vegtables);
+  // res.send("data recieved");
 });
 
 //show
-app.get("/veggies/:index", (req, res) => {
+app.get("/veggies/:id", async (req, res) => {
+  const oneVegtable = await Vegtable.findById(req.params.id);
   res.render("veggies/Show", {
+    vegtable: oneVegtable,
     //second param must be an object
-    vegtable: vegtables[req.params.index], //there will be a variable available inside the ejs file called fruit, its value is fruits[req.params.indexOfFruitsArray]
+    // vegtable: vegtables[req.params.index], //there will be a variable available inside the ejs file called fruit, its value is fruits[req.params.indexOfFruitsArray]
   });
 });
 
