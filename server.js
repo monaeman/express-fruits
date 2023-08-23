@@ -1,8 +1,23 @@
+require("dotenv").config();
+
 const express = require("express");
 
 const app = express();
 const fruits = require("./models/fruits.js");
 const vegtables = require("./models/vegtables.js");
+const mongoose = require("mongoose");
+const Fruit = require("./models/fruit.js");
+
+//connect with mongo
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  //useCreateIndex: true,
+});
+
+mongoose.connection.once("open", () => {
+  console.log("connected to mongoDB");
+});
 
 app.set("views", __dirname + "/views");
 app.set("view engine", "jsx");
@@ -16,10 +31,16 @@ app.use((req, res, next) => {
 //This allows the body of the post request
 app.use(express.urlencoded({ extended: false }));
 
-app.get("/fruitfolder", (req, res) => {
-  res.render("fruitfolder/index", {
-    fruits: fruits,
+//routes
+//index
+
+app.get("/fruitfolder", async function (req, res) {
+  const foundFruits = await Fruit.find({});
+  res.render("fruitfolder/Index", {
+    fruits: foundFruits,
   });
+  //res.render("fruitfolder/index", {
+  //fruits: fruits,
 });
 
 //put this above your Show route
@@ -28,16 +49,21 @@ app.get("/fruitfolder/new", (req, res) => {
 });
 
 //Create = POST
-app.post("/fruitfolder", (req, res) => {
+app.post("/fruitfolder", async (req, res) => {
   console.log(req.body);
   if (req.body.readyToEat === "on") {
     req.body.readyToEat = true;
   } else {
     req.body.readyToEat = false;
   }
-  fruits.push(req.body);
-  console.log("this is the fruits array", fruits);
-  res.send("data recieved");
+  //fruits.push(req.body);
+  //console.log("this is the fruits array", fruits);
+  //res.send("data recieved");
+  const createdFruit = await Fruit.create(req.body);
+  console.log(createdFruit);
+
+  //Fruit.create(req.body, (error, createdFruit) => {
+  res.redirect("/fruitfolder");
 });
 
 //show
