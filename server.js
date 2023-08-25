@@ -8,6 +8,7 @@ const vegtables = require("./models/vegtables.js");
 const mongoose = require("mongoose");
 const Fruit = require("./models/fruit.js");
 const Vegtable = require("./models/vegtable.js");
+const methodOverride = require('method-override');
 
 //connect with mongo
 mongoose.connect(process.env.MONGO_URI, {
@@ -31,6 +32,11 @@ app.use((req, res, next) => {
 });
 //This allows the body of the post request
 app.use(express.urlencoded({ extended: false }));
+
+//after app has been defined
+//use methodOverride.  We'll be adding a query parameter to our delete form named _method
+//Lets you use HTTP verbs such as PUT or DELETE in places where the client doesn't support it.
+app.use(methodOverride('_method'));
 
 //routes
 //index
@@ -76,6 +82,33 @@ app.get("/fruitfolder/:id", async (req, res) => {
     //fruit: fruits[req.params.index], //there will be a variable available inside the ejs file called fruit, its value is fruits[req.params.indexOfFruitsArray]
   });
 });
+//Edit
+app.get('/fruitfolder/:id/edit', async(req, res)=>{
+  const foundFruit = await Fruit.findById(req.params.id)
+  res.render('fruitfolder/Edit', {
+    fruit: foundFruit
+  })
+})
+
+//update
+app.put('/fruitfolder/:id', async(req, res)=> {
+  //verify if checkbox is clicked
+ req.body.readyToEat === "on" ? req.body.readyToEat =true : req.body.readyToEat = false
+ req.body.isItGood === "on" ? req.body.isItGood =true : req.body.isItGood = false
+
+  //find the fruit and update by id
+  await Fruit.findByIdAndUpdate(req.params.id, req.body)
+  res.redirect(`/fruitfolder/${req.params.id}`)
+})
+
+//delete
+app.delete('/fruitfolder/:id', async(req, res)=> {
+  await Fruit.findByIdAndRemove(req.params.id)
+  res.redirect('/fruitfolder')
+})
+
+//Vegtable routes
+
 //Middelware
 app.use((req, res, next) => {
   console.log("I run for all routes!");
@@ -104,6 +137,8 @@ app.post("/veggies", async (req, res) => {
   } else {
     req.body.readyToEat = false;
   }
+
+  
   const createdVegtable = await Vegtable.create(req.body);
   console.log(createdVegtable);
   res.redirect("/veggies");

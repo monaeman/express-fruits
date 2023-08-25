@@ -13,6 +13,8 @@ function New() {
         <br />
         Ready To Eat: <input type="checkbox" name="readyToEat" />
         <br />
+        
+        <br/>
         <input type="submit" name="" value="Create Fruit" />
       </form>
     </div>
