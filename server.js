@@ -157,6 +157,33 @@ app.get("/veggies/:id", async (req, res) => {
   });
 });
 
+//Edit
+app.get('/veggies/:id/edit', async(req, res)=>{
+  const foundVegtable = await Vegtable.findById(req.params.id)
+  res.render('veggies/Edit', {
+    vegtable: foundVegtable
+  })
+})
+
+//update
+app.put('/veggies/:id', async(req, res)=> {
+  //verify if checkbox is clicked
+ req.body.readyToEat === "on" ? req.body.readyToEat =true : req.body.readyToEat = false
+ req.body.isItGood === "on" ? req.body.isItGood =true : req.body.isItGood = false
+
+  //find the vegtable and update by id
+  await Vegtable.findByIdAndUpdate(req.params.id, req.body)
+  res.redirect(`/veggies/${req.params.id}`)
+})
+
+//delete
+app.delete('/veggies/:id', async(req, res)=> {
+  await Vegtable.findByIdAndRemove(req.params.id)
+  res.redirect('/veggies')
+})
+
+
+
 app.listen(5005, () => {
   console.log("listening");
 });
